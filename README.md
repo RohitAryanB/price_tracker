@@ -1,4 +1,4 @@
-# Book Price Checker — Setup Guide
+# Price Checker — Setup Guide
 
 ## Project structure
 ```
