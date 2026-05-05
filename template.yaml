@@ -1,0 +1,64 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Description: >
+  Book price checker — runs every hour via EventBridge and sends
+  an SES email alert when the price drops below the target.
+
+Globals:
+  Function:
+    Runtime: python3.12
+    Timeout: 30
+    MemorySize: 128
+
+Parameters:
+  NotifyEmail:
+    Type: String
+    Description: "Recipient email address for price-drop alerts"
+  SenderEmail:
+    Type: String
+    Description: "SES-verified sender email address"
+  TargetPrice:
+    Type: String
+    Default: "60"
+    Description: "Alert when price drops at or below this value (GBP)"
+
+Resources:
+
+  # ── Lambda Function ────────────────────────────────────────────
+  PriceCheckerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: BookPriceChecker
+      Handler: lambda_function.lambda_handler
+      CodeUri: .          # directory containing lambda_function.py
+      Description: "Scrapes book price and emails an alert on price drop"
+      Environment:
+        Variables:
+          TARGET_PRICE: !Ref TargetPrice
+          NOTIFY_EMAIL: !Ref NotifyEmail
+          SENDER_EMAIL: !Ref SenderEmail
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - ses:SendEmail
+                - ses:SendRawEmail
+              Resource: "*"
+      Events:
+        # ── Cron: every hour on the hour ────────────────────────
+        HourlySchedule:
+          Type: Schedule
+          Properties:
+            Name: BookPriceCheckerSchedule
+            Schedule: rate(1 hour)          # change to cron(0 * * * ? *) for exact :00
+            Description: "Triggers price check every hour"
+            Enabled: true
+
+Outputs:
+  FunctionArn:
+    Description: "Lambda function ARN"
+    Value: !GetAtt PriceCheckerFunction.Arn
+  ScheduleRule:
+    Description: "EventBridge rule that triggers the function"
+    Value: BookPriceCheckerSchedule
