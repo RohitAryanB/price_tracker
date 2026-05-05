@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Price Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f5f3ee;
+      --surface: #ffffff;
+      --border: #e0ddd6;
+      --text: #1a1916;
+      --muted: #7a776e;
+      --accent: #c84b2f;
+      --accent-light: #fdf0ec;
+      --success: #1a6b3c;
+      --success-light: #edf7f2;
+      --mono: 'DM Mono', monospace;
+      --sans: 'Syne', sans-serif;
+    }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .header {
+      margin-bottom: 2.5rem;
+    }
+
+    .badge {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      background: var(--accent-light);
+      border: 1px solid #f0c4b8;
+      padding: 3px 10px;
+      border-radius: 99px;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+
+    h1 span {
+      color: var(--accent);
+    }
+
+    .subtitle {
+      margin-top: 8px;
+      font-size: 15px;
+      color: var(--muted);
+      font-weight: 400;
+      line-height: 1.5;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+    }
+
+    .field {
+      margin-bottom: 1.25rem;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    input {
+      width: 100%;
+      height: 44px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0 14px;
+      font-family: var(--sans);
+      font-size: 14px;
+      color: var(--text);
+      background: var(--bg);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    input:focus {
+      border-color: var(--accent);
+      background: #fff;
+    }
+
+    input::placeholder { color: #bbb9b2; }
+
+    .price-row {
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+
+    .currency {
+      height: 44px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-right: none;
+      border-radius: 10px 0 0 10px;
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .price-row input {
+      border-radius: 0 10px 10px 0;
+    }
+
+    button {
+      width: 100%;
+      height: 48px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-family: var(--sans);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.01em;
+      transition: opacity 0.15s, transform 0.1s;
+      margin-top: 0.5rem;
+    }
+
+    button:hover { opacity: 0.88; }
+    button:active { transform: scale(0.98); }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .result {
+      margin-top: 1.25rem;
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      display: none;
+    }
+
+    .result.success {
+      background: var(--success-light);
+      border: 1px solid #b5dfc8;
+    }
+
+    .result.error {
+      background: var(--accent-light);
+      border: 1px solid #f0c4b8;
+    }
+
+    .result-title {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      margin-bottom: 6px;
+    }
+
+    .result.success .result-title { color: var(--success); }
+    .result.error .result-title { color: var(--accent); }
+
+    .result-body {
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .result.success .result-body { color: #2a5c3f; }
+    .result.error .result-body { color: #8b3420; }
+
+    .price-display {
+      display: flex;
+      gap: 1rem;
+      margin-top: 10px;
+    }
+
+    .price-pill {
+      flex: 1;
+      background: #fff;
+      border: 1px solid #b5dfc8;
+      border-radius: 8px;
+      padding: 8px 12px;
+      text-align: center;
+    }
+
+    .price-pill .pill-label {
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #5a9e78;
+      font-weight: 500;
+    }
+
+    .price-pill .pill-value {
+      font-family: var(--mono);
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--success);
+      margin-top: 2px;
+    }
+
+    .loader {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 1.5rem 0;
+    }
+
+    .hint {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 5px;
+      line-height: 1.45;
+    }
+
+    .book-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--success);
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="badge">books.toscrape.com</div>
+      <h1>Track any<br/><span>book price.</span></h1>
+      <p class="subtitle">Paste a product link, set your target price, and we'll email you the moment it drops.</p>
+    </div>
+
+    <div class="card">
+      <div class="field">
+        <label>Product URL</label>
+        <input type="url" id="url" placeholder="https://books.toscrape.com/catalogue/..." />
+        <p class="hint">Copy the link from any book page on books.toscrape.com</p>
+      </div>
+
+      <div class="field">
+        <label>Target price (£)</label>
+        <div class="price-row">
+          <div class="currency">£</div>
+          <input type="number" id="price" placeholder="e.g. 45" min="0" step="0.01" />
+        </div>
+        <p class="hint">We'll alert you when the price drops to this or below</p>
+      </div>
+
+      <div class="field">
+        <label>Your email</label>
+        <input type="email" id="email" placeholder="you@example.com" />
+        <p class="hint">Must be verified in AWS SES to receive alerts</p>
+      </div>
+
+      <div class="divider"></div>
+
+      <button id="submit-btn" onclick="checkPrice()">Check price now</button>
+
+      <div class="result" id="result">
+        <div class="result-title" id="result-title"></div>
+        <div class="result-body" id="result-body"></div>
+        <div class="price-display" id="price-display" style="display:none">
+          <div class="price-pill">
+            <div class="pill-label">Current</div>
+            <div class="pill-value" id="current-price"></div>
+          </div>
+          <div class="price-pill">
+            <div class="pill-label">Your target</div>
+            <div class="pill-value" id="target-price"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // !! REPLACE THIS with your actual API Gateway URL after deploying !!
+    const API_URL = "https://qtfnq7t1id.execute-api.ap-south-1.amazonaws.com/prod/check";
+
+    async function checkPrice() {
+      const url = document.getElementById("url").value.trim();
+      const price = document.getElementById("price").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const btn = document.getElementById("submit-btn");
+      const result = document.getElementById("result");
+
+      if (!url || !price || !email) {
+        showResult("error", "Missing fields", "Please fill in all three fields before submitting.");
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="loader"></span> Checking...';
+      result.style.display = "none";
+
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url, target_price: parseFloat(price), email }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          showResult("error", "Something went wrong", data.error || "Unknown error occurred.");
+        } else {
+          const titleEl = document.getElementById("result-title");
+          const bodyEl = document.getElementById("result-body");
+          const priceDisplay = document.getElementById("price-display");
+          const currentEl = document.getElementById("current-price");
+          const targetEl = document.getElementById("target-price");
+
+          result.className = "result success";
+          titleEl.textContent = data.price_dropped ? "Price dropped!" : "Price checked";
+          bodyEl.textContent = data.message;
+          currentEl.textContent = `£${data.current_price.toFixed(2)}`;
+          targetEl.textContent = `£${data.target_price.toFixed(2)}`;
+          priceDisplay.style.display = "flex";
+          result.style.display = "block";
+        }
+      } catch (err) {
+        showResult("error", "Network error", "Could not reach the server. Check your API URL in index.html.");
+      }
+
+      btn.disabled = false;
+      btn.innerHTML = "Check price now";
+    }
+
+    function showResult(type, title, body) {
+      const result = document.getElementById("result");
+      result.className = `result ${type}`;
+      document.getElementById("result-title").textContent = title;
+      document.getElementById("result-body").textContent = body;
+      document.getElementById("price-display").style.display = "none";
+      result.style.display = "block";
+    }
+  </script>
+</body>
+</html>
