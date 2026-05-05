@@ -13,7 +13,7 @@ Globals:
 Parameters:
   SenderEmail:
     Type: String
-    Description: "SES-verified sender email address"
+    Description: "SES-verified sender email address (user email and target price come from the frontend)"
 
 Resources:
 
