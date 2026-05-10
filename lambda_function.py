@@ -117,4 +117,4 @@ def lambda_handler(event, context):
             "statusCode": 500,
             "headers": cors,
             "body": json.dumps({"error": str(e)}),
-        }
+        }#23
