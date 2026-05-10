@@ -38,7 +38,7 @@ def send_email_alert(notify_email, sender_email, price, target_price, url, title
     body_html = f"""
     <html>
       <body style="font-family:Arial,sans-serif;max-width:480px;margin:auto;padding:24px">
-        <h2 style="color:#e63946">Price Drop Alert!</h2>
+        <h2 style="color:#e63946">Price Drop!</h2>
         <p><strong>{title}</strong> is now below your target price.</p>
         <table style="border-collapse:collapse;width:100%">
           <tr><td style="padding:8px;border:1px solid #ddd">Current price</td>
