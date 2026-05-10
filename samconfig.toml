@@ -5,7 +5,7 @@ stack_name = "price-checker"
 resolve_s3 = true
 s3_prefix = "price-checker"
 region = "ap-south-1"
-confirm_changeset = true
+confirm_changeset = false
 capabilities = "CAPABILITY_IAM"
 parameter_overrides = "NotifyEmail=\"rohitaryan2006@gmail.com\" SenderEmail=\"sce24ec057@sairamtap.edu.in\" TargetPrice=\"60\""
 image_repositories = []
